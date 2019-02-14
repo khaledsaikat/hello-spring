@@ -9,6 +9,10 @@ trigger:
 pool:
   vmImage: 'Ubuntu-16.04'
 
+variables:
+    azureSubscriptionEndpoint: AzureRM
+    azureContainerRegistry: khaledcr.azurecr.io
+
 steps:
 - task: Maven@3
   inputs:
@@ -25,7 +29,32 @@ steps:
   displayName: Build image
   inputs:
     command: build
-    azureSubscriptionEndpoint: AzureRM
-    azureContainerRegistry: khaledcr.azurecr.io
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
     dockerFile: Dockerfile
     imageName: $(Build.Repository.Name)
+
+- task: Docker@1
+  displayName: Tag image
+  inputs:
+    command: tag
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    imageName: $(azureContainerRegistry)/$(Build.Repository.Name):latest
+    arguments: $(azureContainerRegistry)/$(Build.Repository.Name):$(Build.BuildId)
+
+- task: Docker@1
+  displayName: Push image
+  inputs:
+    command: push
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    imageName: $(Build.Repository.Name):$(Build.BuildId)
+
+- task: Docker@1
+  displayName: Run image
+  inputs:
+    command: run
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    imageName: $(Build.Repository.Name):$(Build.BuildId)
