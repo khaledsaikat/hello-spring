@@ -20,3 +20,12 @@ steps:
     publishJUnitResults: false
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'clean package'
+
+- task: Docker@1
+  displayName: Build image
+  inputs:
+    command: build
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    dockerFile: Dockerfile
+    imageName: $(Build.Repository.Name)
