@@ -25,7 +25,7 @@ steps:
   displayName: Build image
   inputs:
     command: build
-    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-    azureContainerRegistry: $(azureContainerRegistry)
+    azureSubscriptionEndpoint: AzureRM
+    azureContainerRegistry: khaledcr.azurecr.io
     dockerFile: Dockerfile
     imageName: $(Build.Repository.Name)
